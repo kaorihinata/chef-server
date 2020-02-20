@@ -57,5 +57,6 @@ build do
   build_args = ""
   build_options.each { |k,v| build_args << " #{k}=#{v}"}
   make "haproxy #{build_args}", env: env
+  make "all #{build_args}", env: env
   make "install #{build_args}", env: env
 end
