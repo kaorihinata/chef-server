@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 name "haproxy"
-default_version "1.6.4"
+default_version "1.6.15"
 
 dependency "zlib"
 dependency "pcre"
@@ -26,7 +26,7 @@ skip_transitive_dependency_licensing true
 
 # HTTPS is available but certificate validation fails on OS X
 source url: "http://www.haproxy.org/download/1.6/src/haproxy-#{version}.tar.gz",
-       sha256: "e5fa3c604f1fe9ecb6974ccda6705c105ebee14b3a913069fb08f00e860cd230"
+       sha256: "8b1a9afe9ad3bb4db36ac9125a6078a0df858088219a1e63e8947c09d46879c2"
 
 relative_path "haproxy-#{version}"
 
