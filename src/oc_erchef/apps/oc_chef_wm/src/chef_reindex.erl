@@ -235,14 +235,17 @@ send_to_index_queue(OrgName, OrgId, Index, SerializedObjects, NameIdDict) ->
     {Res, Missing}.
 
 add_batch(Batch, OrgName) ->
-    case oc_chef_object_db:add_batch_to_solr(Batch) of
+    try oc_chef_object_db:add_batch_to_solr(Batch) of
         ok -> ok;
         {error, Failures} ->
             Failures1 = humanize_failures(Failures, []),
             %% We log the failures to the log as well so we can find
             %% them even if we don't get the command output
             log_failures(OrgName, Failures1),
-            {error, Failures1}
+            erlang:error(Failures1)
+    catch
+        error:Reason ->
+            {error, Reason}
     end.
 
 log_failures(_OrgName, []) ->
@@ -255,8 +258,12 @@ log_failures(OrgName, [Failure|Rest]) ->
 humanize_failures([], Acc) ->
     Acc;
 humanize_failures([H|T], Acc) ->
-    {Id, Reason} = H,
-    humanize_failures(T, [{Id, pretty_reason(Reason)} | Acc]).
+    case H of
+        {Id, Reason} -> humanize_failures(T, [{Id, pretty_reason(Reason)} | Acc]);
+        Error -> humanize_failures(T, [{<<"ERROR">>, pretty_reason(Error)} | Acc])
+    end;
+humanize_failures(Failures, []) ->
+    [{<<"ERROR">>, pretty_reason(Failures)}].
 
 pretty_reason({error,{error,no_members}}) ->
     "no_members: Ran out of HTTP workers talking to search backend";
