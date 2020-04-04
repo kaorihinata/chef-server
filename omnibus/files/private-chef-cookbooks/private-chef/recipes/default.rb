@@ -61,8 +61,11 @@ ruby_block 'first_time_internal_elasticsearch_install' do
   node.override['private_chef']['rabbitmq']['enable'] = false
   node.override['private_chef']['opscode-expander']['enable'] = false
   node.override['private_chef']['elasticsearch']['first_internal_install'] = true
-  action :delete
   only_if { File.exist?('/var/opt/opscode/first_time_internal_elasticsearch_install') }
+end
+
+file '/var/opt/opscode/first_time_internal_elasticsearch_install' do
+  action :delete
 end
 
 if node['private_chef']['fips_enabled']
