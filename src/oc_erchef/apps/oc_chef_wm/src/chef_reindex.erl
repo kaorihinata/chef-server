@@ -261,9 +261,7 @@ humanize_failures([H|T], Acc) ->
     case H of
         {Id, Reason} -> humanize_failures(T, [{Id, pretty_reason(Reason)} | Acc]);
         Error -> humanize_failures(T, [{<<"ERROR">>, pretty_reason(Error)} | Acc])
-    end;
-humanize_failures(Failures, []) ->
-    [{<<"ERROR">>, pretty_reason(Failures)}].
+    end.
 
 pretty_reason({error,{error,no_members}}) ->
     "no_members: Ran out of HTTP workers talking to search backend";
