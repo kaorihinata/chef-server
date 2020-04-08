@@ -238,17 +238,14 @@ send_to_index_queue(OrgName, OrgId, Index, SerializedObjects, NameIdDict) ->
         Batch :: list(),
         OrgName :: binary()) -> ok | {error , list()}.
 add_batch(Batch, OrgName) ->
-    try oc_chef_object_db:add_batch_to_solr(Batch) of
+    case oc_chef_object_db:add_batch_to_solr(Batch) of
         ok -> ok;
         {error, Failures} ->
             Failures1 = humanize_failures(Failures, []),
             %% We log the failures to the log as well so we can find
             %% them even if we don't get the command output
             log_failures(OrgName, Failures1),
-            erlang:error(Failures1)
-    catch
-        error:Reason ->
-            {error, Reason}
+            {error, Failures1}
     end.
 
 log_failures(_OrgName, []) ->
